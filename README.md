@@ -1,6 +1,6 @@
 # chatapp
 
-A new Flutter project.
+A real-time chat application built with Flutter and Firebase, supporting text and image messages, user authentication, and live updates.
 
 ## Getting Started
 
@@ -14,3 +14,4 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
