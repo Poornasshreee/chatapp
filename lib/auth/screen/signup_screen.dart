@@ -5,8 +5,6 @@ import 'package:chatapp/auth/service/auth_service.dart';
 import 'package:chatapp/chat/utils/utils.dart';
 import 'package:chatapp/route.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
-
 
 class SignupScreen extends ConsumerWidget {
   const SignupScreen({super.key});
@@ -25,6 +23,7 @@ class SignupScreen extends ConsumerWidget {
         name: formState.name,
       );
       formNotifier.setLoading(false);
+
       if (res == "success" && context.mounted) {
         NavigationHelper.pushReplacement(context, UserLoginScreen());
         showAppSnackbar(
@@ -44,6 +43,7 @@ class SignupScreen extends ConsumerWidget {
     }
 
     double height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -52,12 +52,12 @@ class SignupScreen extends ConsumerWidget {
             Container(
               height: height / 2.4,
               width: double.maxFinite,
-              decoration: BoxDecoration(),
+              decoration: const BoxDecoration(),
               child: Image.asset("assets/77881.jpg", fit: BoxFit.cover),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Padding(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
               child: Column(
                 children: [
                   TextField(
@@ -65,40 +65,41 @@ class SignupScreen extends ConsumerWidget {
                     onChanged: (value) => formNotifier.updateName(value),
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person),
+                      prefixIcon: const Icon(Icons.person),
                       labelText: "Enter your name",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(15),
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.all(15),
                       errorText: formState.nameError,
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   TextField(
                     autocorrect: false,
                     onChanged: (value) => formNotifier.updateEmail(value),
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.email),
+                      prefixIcon: const Icon(Icons.email),
                       labelText: "Enter your email",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(15),
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.all(15),
                       errorText: formState.emailError,
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   TextField(
                     autocorrect: false,
                     onChanged: (value) => formNotifier.updatePassword(value),
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: formState.isPasswordHidden,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.lock),
                       labelText: "Enter your password",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(15),
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.all(15),
                       errorText: formState.passwordError,
                       suffixIcon: IconButton(
-                        onPressed: () => formNotifier.togglePasswordVisibility(),
+                        onPressed: () =>
+                            formNotifier.togglePasswordVisibility(),
                         icon: Icon(
                           formState.isPasswordHidden
                               ? Icons.visibility_off
@@ -107,23 +108,37 @@ class SignupScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   formState.isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : MyButton(
-                          onTab: formState.isFormValid ? signup : null,
-                          buttonText: "Sign Up",
-                        ),
-                  SizedBox(height: 20),
+    ? const Center(child: CircularProgressIndicator())
+    : ElevatedButton(
+        onPressed: formState.isFormValid ? signup : null,
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 50),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: formState.isFormValid ? Colors.blue : Colors.grey,
+        ),
+        child: const Text(
+          "Sign Up",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+
+                  const SizedBox(height: 20),
                   Row(
                     children: [
-                      Spacer(),
-                      Text("Already have an account?"),
+                      const Spacer(),
+                      const Text("Already have an account?"),
                       GestureDetector(
                         onTap: () {
                           NavigationHelper.push(context, UserLoginScreen());
                         },
-                        child: Text(
+                        child: const Text(
                           "Login",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),

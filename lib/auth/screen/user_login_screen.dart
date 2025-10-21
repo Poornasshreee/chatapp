@@ -7,39 +7,43 @@ import 'package:chatapp/chat/screens/app_home_screen.dart';
 import 'package:chatapp/chat/utils/utils.dart';
 import 'package:chatapp/route.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
 
 class UserLoginScreen extends ConsumerWidget {
   const UserLoginScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     double height = MediaQuery.of(context).size.height;
     final formState = ref.watch(authFormProvider);
-    final formNotifer = ref.read(authFormProvider.notifier);
+    final formNotifier = ref.read(authFormProvider.notifier);
     final authMethod = ref.read(authMethodProvider);
+
     void login() async {
-      formNotifer.setLoading(true);
+      formNotifier.setLoading(true);
       final res = await authMethod.loginUser(
         email: formState.email,
         password: formState.password,
       );
-      formNotifer.setLoading(false);
-      if (res == "success") {
+      formNotifier.setLoading(false);
+
+      if (res == "success" && context.mounted) {
         NavigationHelper.pushReplacement(context, MainHomeScreen());
-        // mySnackBar(message: "Successful Login.", context: context);
         showAppSnackbar(
           context: context,
           type: SnackbarType.success,
           description: "Successful Login",
         );
       } else {
-           showAppSnackbar(
-          context: context,
-          type: SnackbarType.error,
-          description: res,
-        );
+        if (context.mounted) {
+          showAppSnackbar(
+            context: context,
+            type: SnackbarType.error,
+            description: res,
+          );
+        }
       }
     }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -51,35 +55,35 @@ class UserLoginScreen extends ConsumerWidget {
               child: Image.asset("assets/2752392.jpg", fit: BoxFit.cover),
             ),
             Padding(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
               child: Column(
                 children: [
                   TextField(
                     autocorrect: false,
-                    onChanged: (value) => formNotifer.updateEmail(value),
+                    onChanged: (value) => formNotifier.updateEmail(value),
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.email),
+                      prefixIcon: const Icon(Icons.email),
                       labelText: "Enter your email",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(15),
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.all(15),
                       errorText: formState.emailError,
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   TextField(
                     autocorrect: false,
-                    onChanged: (value) => formNotifer.updatePassword(value),
+                    onChanged: (value) => formNotifier.updatePassword(value),
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: formState.isPasswordHidden,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.lock),
                       labelText: "Enter your password",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.all(15),
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.all(15),
                       errorText: formState.passwordError,
                       suffixIcon: IconButton(
-                        onPressed: () => formNotifer.togglePasswordVisibility(),
+                        onPressed: () => formNotifier.togglePasswordVisibility(),
                         icon: Icon(
                           formState.isPasswordHidden
                               ? Icons.visibility_off
@@ -88,39 +92,54 @@ class UserLoginScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   formState.isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : MyButton(
-                          onTab: formState.isFormValid ? login : null,
-                          buttonText: "Login",
+                      ? const Center(child: CircularProgressIndicator())
+                      : ElevatedButton(
+                          onPressed: formState.isFormValid ? login : null,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            backgroundColor: formState.isFormValid
+                                ? Colors.blue
+                                : Colors.grey,
+                          ),
+                          child: const Text(
+                            "Login",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Row(
-                    children: [
-                      Expanded(
-                        child: Container(height: 1, color: Colors.black26),
+                    children: const [
+                      Expanded(child: Divider(color: Colors.black26)),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text("or"),
                       ),
-                      Text(" or "),
-                      Expanded(
-                        child: Container(height: 1, color: Colors.black26),
-                      ),
+                      Expanded(child: Divider(color: Colors.black26)),
                     ],
                   ),
-                  SizedBox(height: 15),
-                  // for google auth
-                  GoogleLoginScreen(),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
+                  // Google Auth Button
+                  const GoogleLoginScreen(),
+                  const SizedBox(height: 15),
                   Row(
                     children: [
-                      Spacer(),
-                      Text("Don't have an account? "),
+                      const Spacer(),
+                      const Text("Don't have an account? "),
                       GestureDetector(
                         onTap: () {
-                          NavigationHelper.push(context, SignupScreen());
+                          NavigationHelper.push(context, const SignupScreen());
                         },
-                        child: Text(
-                          "SignUp",
+                        child: const Text(
+                          "Sign Up",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),

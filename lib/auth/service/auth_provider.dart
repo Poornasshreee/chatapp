@@ -1,4 +1,4 @@
-//import 'package:chatapp/model/auth_model.dart';
+import 'package:chatapp/auth/model/auth_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
@@ -16,8 +16,7 @@ class AuthFormNotifier extends StateNotifier<AuthFormState> {
   }
   void updateEmail(String email) {
     String? emailError;
-    if (email.isNotEmpty &&
-        !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+    if (email.isNotEmpty && !RegExp(...).hasMatch(email)) {
       emailError = 'Enter a valid email';
     }
     state = state.copyWith(email: email, emailError: emailError);

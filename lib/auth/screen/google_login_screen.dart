@@ -23,7 +23,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
 
     try {
       // Call AuthMethod's sign-in
-      final userCredential = await AuthMethod().signInWithGoogle(context);
+      final userCredential = await AuthMethod().signInWithGoogle(/*context*/);
 
       if (!mounted) return;
 
@@ -40,7 +40,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
         type: SnackbarType.error,
         description: 'Google Login failed. Try again!',
       );
-      print('❌ Google sign-in error: $e');
+      print('Google sign-in error: $e');
     } finally {
       if (mounted) {
         setState(() {

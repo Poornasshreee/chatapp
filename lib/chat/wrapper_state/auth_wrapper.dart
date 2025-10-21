@@ -1,21 +1,56 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:chatapp/feature/home/app_main_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AuthenticationWrapper extends StatefulWidget {
+// ----------------- Placeholder for app state manager provider -----------------
+final appStateManagerProvider = Provider<AppStateManager>((ref) {
+  return AppStateManager();
+});
+
+class AppStateManager {
+  Future<void> initializeUserSession() async {
+    // simulate a session initialization delay
+    await Future.delayed(const Duration(seconds: 2));
+  }
+}
+
+// ----------------- Placeholder Home Screen -----------------
+class MainHomeScreen extends StatelessWidget {
+  const MainHomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Home"),
+      ),
+      body: const Center(
+        child: Text(
+          "Welcome to the Home Screen!",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+}
+
+// ----------------- Authentication Wrapper -----------------
+class AuthenticationWrapper extends ConsumerStatefulWidget {
   const AuthenticationWrapper({super.key});
 
   @override
-  State<AuthenticationWrapper> createState() => _AuthenticationWrapperState();
+  ConsumerState<AuthenticationWrapper> createState() =>
+      _AuthenticationWrapperState();
 }
 
-class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
+class _AuthenticationWrapperState
+    extends ConsumerState<AuthenticationWrapper> {
   bool _isInitialized = false;
 
   @override
   void initState() {
-    _initializeSession();
     super.initState();
+    _initializeSession();
   }
 
   Future<void> _initializeSession() async {
@@ -28,7 +63,7 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
           const Duration(seconds: 10),
           () => throw TimeoutException('Session init timed out'),
         ),
-      ]); // future.delayed
+      ]);
 
       if (mounted) {
         setState(() {
@@ -36,9 +71,8 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
         });
       }
     } catch (e) {
-      print("Error initializing session: $e"); // Don't invoke 'print' in production code. Try using a logger
+      debugPrint("Error initializing session: $e");
       if (mounted) {
-        // still alive moving forward even if init fails
         setState(() {
           _isInitialized = true; // prevent infinite loading
         });
@@ -59,11 +93,36 @@ class _AuthenticationWrapperState extends State<AuthenticationWrapper> {
               SizedBox(height: 16),
               Text("Setting up your account..."),
             ],
-          ), // Column
-        ), // Center
-      ); // Scaffold
+          ),
+        ),
+      );
     }
+
     // once initialized -> go to main app home screen
     return const MainHomeScreen();
+  }
+}
+
+// ----------------- Main App Entry Point -----------------
+void main() {
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Auth Wrapper Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const AuthenticationWrapper(),
+    );
   }
 }

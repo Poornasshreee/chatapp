@@ -4,6 +4,7 @@ import 'package:chatapp/chat/provider/user_profile_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chatapp/auth/screen/user_login_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -126,7 +127,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: MaterialButton(
-                    minHeight: 50,
+                    minWidth: 50,//minheight might be, check
                     color: Colors.red,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

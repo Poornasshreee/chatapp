@@ -6,6 +6,7 @@ import 'package:chatapp/chat/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 
 class ChatScreen extends ConsumerStatefulWidget {
@@ -24,6 +25,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   
   bool _isUploadingImage = false;
+  bool _isSendingLocation = false;
   Timer? _typingTimer;
   bool _isCurrentlyTyping = false;
   bool _isTextFieldFocused = false;
@@ -225,6 +227,80 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  // ---------- LOCATION FUNCTIONALITY ----------
+  
+  // Get current position with permission handling
+  Future<Position> currentPosition() async {
+    bool serviceEnable;
+    LocationPermission permission;
+
+    // check if the location service are enabled or not
+    serviceEnable = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnable) {
+      return Future.error("Location services are disable");
+    }
+
+    // check the location permission status
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error("Location permission denied");
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error("Location denied permanently");
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
+  // Send location
+  Future<void> _sendLocation() async {
+    try {
+      setState(() {
+        _isSendingLocation = true;
+      });
+
+      Position position = await currentPosition();
+      
+      // Create Google Maps URL
+      String locationUrl = 'https://www.google.com/maps/search/?api=1&query=${position.latitude},${position.longitude}';
+
+      final chatService = ref.read(chatServiceProvider);
+      
+      // Send location as text message (you can modify this to send as location type in your backend)
+      final result = await chatService.sendTextMessage(
+        chatId: widget.chatId,
+        message: '📍 Location: $locationUrl',
+        receiverId: widget.otherUser.uid,
+      );
+
+      setState(() {
+        _isSendingLocation = false;
+      });
+
+      if (result != "success" && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to send location: $result')),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isSendingLocation = false;
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
+  // ---------- END LOCATION ----------
+
   @override
   Widget build(BuildContext context) {
     final chatService = ref.read(chatServiceProvider);
@@ -400,6 +476,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ),
             ),
 
+          if (_isSendingLocation)
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: 12),
+                  Text('Getting location...', 
+                      style: TextStyle(color: Colors.grey)),
+                ],
+              ),
+            ),
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(
@@ -415,12 +509,30 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
             child: Row(
               children: [
+                // Location button
                 IconButton(
-                  onPressed: _isUploadingImage ? null : _showImageOptions,
+                  onPressed: (_isUploadingImage || _isSendingLocation) 
+                      ? null 
+                      : _sendLocation,
+                  icon: Icon(
+                    Icons.location_on,
+                    size: 30,
+                    color: (_isUploadingImage || _isSendingLocation) 
+                        ? Colors.grey 
+                        : Colors.red,
+                  ),
+                ),
+                // Image button
+                IconButton(
+                  onPressed: (_isUploadingImage || _isSendingLocation) 
+                      ? null 
+                      : _showImageOptions,
                   icon: Icon(
                     Icons.image,
                     size: 30,
-                    color: _isUploadingImage ? Colors.grey : Colors.blueAccent,
+                    color: (_isUploadingImage || _isSendingLocation) 
+                        ? Colors.grey 
+                        : Colors.blueAccent,
                   ),
                 ),
                 Expanded(
@@ -457,13 +569,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
                 const SizedBox(width: 8),
                 FloatingActionButton(
-                  onPressed: _isUploadingImage ? null : _sendMessage,
+                  onPressed: (_isUploadingImage || _isSendingLocation) 
+                      ? null 
+                      : _sendMessage,
                   mini: true,
                   elevation: 0,
                   backgroundColor: Colors.grey.shade300,
                   child: Icon(
                     Icons.send,
-                    color: _isUploadingImage ? Colors.grey : Colors.blueAccent,
+                    color: (_isUploadingImage || _isSendingLocation) 
+                        ? Colors.grey 
+                        : Colors.blueAccent,
                     size: 27,
                   ),
                 ),
