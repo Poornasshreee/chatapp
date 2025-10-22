@@ -1,5 +1,8 @@
+
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// ---- Firestore user model ----
 class AuthModel {
   final String uid;
   final String email;
@@ -21,7 +24,6 @@ class AuthModel {
     this.isEmailVerified = false,
   });
 
-  // Convert Firestore document to AuthModel
   factory AuthModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return AuthModel(
@@ -36,7 +38,6 @@ class AuthModel {
     );
   }
 
-  // Convert AuthModel to Map for Firestore
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
@@ -50,7 +51,6 @@ class AuthModel {
     };
   }
 
-  // Create a copy with modified fields
   AuthModel copyWith({
     String? uid,
     String? email,
@@ -70,6 +70,60 @@ class AuthModel {
       lastLogin: lastLogin ?? this.lastLogin,
       isOnline: isOnline ?? this.isOnline,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+    );
+  }
+}
+
+// ---- UI form state for signup/login ----
+@immutable
+class AuthFormState {
+  final String name;
+  final String email;
+  final String password;
+  final bool isPasswordHidden;
+  final bool isLoading;
+  final String? nameError;
+  final String? emailError;
+  final String? passwordError;
+
+  const AuthFormState({
+    this.name = '',
+    this.email = '',
+    this.password = '',
+    this.isPasswordHidden = true,
+    this.isLoading = false,
+    this.nameError,
+    this.emailError,
+    this.passwordError,
+  });
+
+  bool get isFormValid =>
+      name.isNotEmpty &&
+      email.isNotEmpty &&
+      password.isNotEmpty &&
+      nameError == null &&
+      emailError == null &&
+      passwordError == null;
+
+  AuthFormState copyWith({
+    String? name,
+    String? email,
+    String? password,
+    bool? isPasswordHidden,
+    bool? isLoading,
+    String? nameError,
+    String? emailError,
+    String? passwordError,
+  }) {
+    return AuthFormState(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      isPasswordHidden: isPasswordHidden ?? this.isPasswordHidden,
+      isLoading: isLoading ?? this.isLoading,
+      nameError: nameError,
+      emailError: emailError,
+      passwordError: passwordError,
     );
   }
 }

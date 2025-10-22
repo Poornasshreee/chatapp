@@ -1,4 +1,4 @@
-import 'package:chatapp/chat/model/user_list_model.dart';
+/*import 'package:chatapp/chat/model/user_list_model.dart';
 import 'package:chatapp/chat/provider/provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -141,6 +141,75 @@ class UserListNotifier extends StateNotifier<UserListTileState> {
       state = state.copyWith(isLoading: false);
       return 'Error: $e';
     }
+  }
+}
+
+final userListProvider = StateNotifierProvider.family<
+    UserListNotifier,
+    UserListTileState,
+    String>((ref, userId) {
+  return UserListNotifier(ref, userId);
+});*/
+import 'package:chatapp/chat/model/user_list_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class UserListNotifier extends StateNotifier<UserListTileState> {
+  final Ref ref;
+  final String userId;
+
+  UserListNotifier(this.ref, this.userId) : super(UserListTileState()) {
+    // No need to check relationship - everyone can chat
+  }
+
+  Future<void> createChatAndNavigate() async {
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+      if (currentUserId == null) {
+        state = state.copyWith(isLoading: false);
+        return;
+      }
+
+      final chatId = _generateChatID(currentUserId, userId);
+      await _ensureChatExists(chatId, currentUserId, userId);
+
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      print('Error creating chat: $e');
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> _ensureChatExists(
+    String chatId,
+    String currentUserId,
+    String otherUserId,
+  ) async {
+    final firestore = FirebaseFirestore.instance;
+    final chatDoc = await firestore.collection('chats').doc(chatId).get();
+
+    if (!chatDoc.exists) {
+      await firestore.collection('chats').doc(chatId).set({
+        'chatId': chatId,
+        'participants': [currentUserId, otherUserId],
+        'lastMessage': '',
+        'lastMessageTime': FieldValue.serverTimestamp(),
+        'lastSenderId': '',
+        'unreadCount': {
+          currentUserId: 0,
+          otherUserId: 0,
+        },
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
+  }
+
+  String _generateChatID(String userId1, String userId2) {
+    final ids = [userId1, userId2]..sort();
+    return '${ids[0]}_${ids[1]}';
   }
 }
 

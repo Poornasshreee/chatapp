@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chatapp/chat/wrapper_state/auth_wrapper.dart';
 import 'package:chatapp/auth/screen/user_login_screen.dart';
+import 'package:chatapp/auth/service/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+/*class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
@@ -49,6 +50,46 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         }
       },
       error: (error, _) => Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text("Error: $error"),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(authStateProvider),
+                child: const Text("Retry"),
+              ),
+            ],
+          ),
+        ),
+      ),
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+}*/
+class MyHomePage extends ConsumerWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+
+    return authState.when(
+      data: (user) {
+        if (user != null) {
+          return const AuthenticationWrapper();
+        } else {
+          return const UserLoginScreen();
+        }
+      },
+      error: (error, stackTrace) => Scaffold(
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
+/*import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthMethod {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
+scopes: ['email', 'profile'],
   );
 
   Future<UserCredential?> signInWithGoogle() async {
@@ -34,4 +34,4 @@ class AuthMethod {
     await _googleSignIn.disconnect(); // ensures full logout
     await _auth.signOut();
   }
-}
+}*/

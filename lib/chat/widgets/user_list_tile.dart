@@ -1,4 +1,4 @@
-import 'package:chatapp/chat/model/user_model.dart';
+/*import 'package:chatapp/chat/model/user_model.dart';
 import 'package:chatapp/chat/provider/user_list_provider.dart';
 import 'package:chatapp/chat/screens/chatscreen/chat_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -203,6 +203,120 @@ class UserListTile extends ConsumerWidget {
         builder: (context) => ChatScreen(chatId: chatId, otherUser: user),
       ),
     );
+  }
+
+  String _generateChatID(String userId1, String userId2) {
+    final ids = [userId1, userId2]..sort();
+    return '${ids[0]}_${ids[1]}';
+  }
+}*/
+import 'package:chatapp/chat/model/user_model.dart';
+import 'package:chatapp/chat/provider/user_list_provider.dart';
+import 'package:chatapp/chat/screens/chatscreen/chat_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class UserListTile extends ConsumerWidget {
+  final UserModel user;
+
+  const UserListTile({super.key, required this.user});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(userListProvider(user.uid));
+
+    return ListTile(
+      leading: Stack(
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundImage: user.photoURL != null && user.photoURL!.isNotEmpty
+                ? NetworkImage(user.photoURL!)
+                : null,
+            child: user.photoURL == null || user.photoURL!.isEmpty
+                ? Text(
+                    user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                    style: const TextStyle(fontSize: 20),
+                  )
+                : null,
+          ),
+          if (user.isOnline)
+            Positioned(
+              bottom: 0,
+              right: 2,
+              child: Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+              ),
+            ),
+        ],
+      ),
+      title: Text(
+        user.name,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontWeight: FontWeight.w500),
+      ),
+      subtitle: Text(
+        user.isOnline ? 'Online' : 'Offline',
+        style: TextStyle(
+          color: user.isOnline ? Colors.green : Colors.grey,
+          fontSize: 12,
+        ),
+      ),
+      trailing: state.isLoading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : MaterialButton(
+              color: Colors.blueAccent,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              onPressed: () => _navigateToChat(context, ref),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.chat, color: Colors.white, size: 18),
+                  SizedBox(width: 5),
+                  Text(
+                    'Chat',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Future<void> _navigateToChat(BuildContext context, WidgetRef ref) async {
+    final notifier = ref.read(userListProvider(user.uid).notifier);
+    await notifier.createChatAndNavigate();
+
+    if (context.mounted) {
+      final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+      final chatId = _generateChatID(currentUserId, user.uid);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatScreen(chatId: chatId, otherUser: user),
+        ),
+      );
+    }
   }
 
   String _generateChatID(String userId1, String userId2) {

@@ -1,5 +1,5 @@
 import 'package:chatapp/chat/provider/provider.dart';
-import 'package:chatapp/chat/service/chat_service.dart';
+//import 'package:chatapp/chat/service/chat_service.dart';
 import 'package:chatapp/chat/widgets/message_and_images_display.dart';
 import 'package:flutter/material.dart';
 import 'package:chatapp/chat/model/user_model.dart';
@@ -31,7 +31,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _isTextFieldFocused = false;
   Timer? _typingDebounceTimer;
   Timer? _readStatusTimer;
-  List<String> _unreadMessageIds = [];
+  //List<String> _unreadMessageIds = [];
 
   @override
   void initState() {
@@ -430,7 +430,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 final currentUserId = FirebaseAuth.instance.currentUser!.uid;
                 final hasUnreadMessages = messages.any(
                   (msg) => msg.senderId != currentUserId && 
-                           !(msg.readBy?.contains(currentUserId) ?? false),
+                           !(msg.readBy.containsKey(currentUserId) == true),
                 );
 
                 if (hasUnreadMessages) {

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:chatapp/chat/model/message_model.dart';
+//import 'package:chatapp/chat/model/message_model.dart';
 import 'dart:async';
 
 class ChatListScreen extends StatefulWidget {
@@ -263,7 +263,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
     );
   }
 
-  void _showSnackbar(String message, {bool isError = false}) {
+  /*void _showSnackbar(String message, {bool isError = false}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -273,7 +273,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         behavior: SnackBarBehavior.floating,
       ),
     );
-  }
+  }*/
 
   Timer? _readStatusTimer;
   List<String> _unreadMessageIds = [];
@@ -281,7 +281,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
   void _markMessagesAsRead() {
     _readStatusTimer?.cancel();
     _readStatusTimer = Timer(const Duration(milliseconds: 500), () async {
-      final currentUserId = _auth.currentUser!.uid;
+      //final currentUserId = _auth.currentUser!.uid;
       final batch = _firestore.batch();
 
       for (String msgId in _unreadMessageIds) {

@@ -128,7 +128,7 @@ class UserLoginScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 15),
                   // Google Auth Button
-                  const GoogleLoginScreen(),
+                  //const GoogleLoginScreen(),
                   const SizedBox(height: 15),
                   Row(
                     children: [

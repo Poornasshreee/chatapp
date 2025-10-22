@@ -9,7 +9,7 @@ import 'package:chatapp/chat/model/message_model.dart';
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  //final FirebaseStorage _storage = FirebaseStorage.instance;
 
 
   String get currentUserId => _auth.currentUser?.uid ?? "";
@@ -43,7 +43,7 @@ class ChatService {
     }
   }
 
-  Future<bool> areUsersFriends(String userID1, String userID2) async {
+ /* Future<bool> areUsersFriends(String userID1, String userID2) async {
     final chatID = _generateChatID(userID1, userID2);
     final friendship = await _firestore
         .collection("friendships")
@@ -52,7 +52,7 @@ class ChatService {
 
     final exists = friendship.exists;
     return exists;
-  }
+  }*/
 
   Future<String?> sendMessageRequest(String receiverId) async {
     try {
@@ -385,6 +385,7 @@ class ChatService {
       
       final data = doc.data() as Map<String, dynamic>?;
       if (data == null || data['typing'] is! Map) return false;
+      
       
       final typing = data['typing'] as Map<String, dynamic>;
       final typingTimestamp = data['typingTimestamp'] as Map<String, dynamic>? ?? {};
