@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chatapp/chat/screens/app_home_screen.dart';
 
 // ----------------- Placeholder for app state manager provider -----------------
 final appStateManagerProvider = Provider<AppStateManager>((ref) {
@@ -14,25 +15,7 @@ class AppStateManager {
   }
 }
 
-// ----------------- Placeholder Home Screen -----------------
-class MainHomeScreen extends StatelessWidget {
-  const MainHomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home"),
-      ),
-      body: const Center(
-        child: Text(
-          "Welcome to the Home Screen!",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
+// MainHomeScreen is now imported from chat/screens/app_home_screen.dart
 
 // ----------------- Authentication Wrapper -----------------
 class AuthenticationWrapper extends ConsumerStatefulWidget {
