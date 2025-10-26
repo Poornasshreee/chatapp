@@ -366,3 +366,7 @@ Allows profile image update and logout functionality.
 - **google_mobile_ads:** Integrates Google AdMob into the application to display advertisements.
 - **cupertino_icons:** Provides Apple-style icons for iOS-specific UI elements.
 
+<img width="244" height="427" alt="Screenshot 2025-10-26 174623" src="https://github.com/user-attachments/assets/b268c502-e976-4ce8-8a48-de4532222133" />
+<img width="240" height="431" alt="Screenshot 2025-10-26 174700" src="https://github.com/user-attachments/assets/ab9a84ff-598c-4f7a-8e46-6e42e2401911" />
+
+
